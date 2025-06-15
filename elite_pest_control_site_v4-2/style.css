@@ -1,0 +1,41 @@
+
+:root {
+  --accent: #0099cc;
+  --dark: #1c1c1c;
+  --light: #ffffff;
+  --gray: #f0f0f0;
+  --highlight: #e1f5fe;
+}
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--gray); color: var(--dark); }
+.site-header {
+  background: var(--dark); padding: 10px 20px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+}
+.logo { height: 60px; }
+.site-nav { display: flex; flex-wrap: wrap; }
+.site-nav a {
+  color: white; margin: 5px 15px; text-decoration: none; font-weight: bold;
+}
+main { padding: 20px; background: var(--light); }
+.hero, .about, .reviews {
+  margin-bottom: 30px; padding: 20px; border-left: 5px solid var(--accent); background: var(--highlight);
+}
+.btn-primary {
+  display: inline-block; padding: 10px 20px;
+  background: var(--accent); color: white; border-radius: 4px; text-decoration: none; margin-top: 10px;
+}
+footer {
+  background: var(--dark); color: white; text-align: center;
+  padding: 15px; font-size: 0.9rem;
+}
+form { max-width: 500px; }
+label { display: block; margin-bottom: 10px; }
+input, textarea {
+  width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;
+}
+@media (max-width: 600px) {
+  .site-header { flex-direction: column; align-items: flex-start; }
+  .logo { height: 50px; }
+  .site-nav a { margin: 5px 10px 0 0; }
+}
