@@ -19,6 +19,17 @@
     .id-hero h1 { color: var(--white); font-size: clamp(1.8rem, 4vw, 2.8rem); margin-bottom: 12px; }
     .id-hero p { color: var(--blue-light); font-size: 1.05rem; max-width: 540px; margin: 0 auto 20px; }
     .id-hero-meta { font-size: 0.82rem; color: rgba(219, 234, 242, 0.65); }
+    .id-disclaimer {
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 0.86rem;
+      line-height: 1.45;
+      margin: 18px auto 0;
+      max-width: 680px;
+      padding: 12px 16px;
+    }
 
     .id-section { padding: 44px 22px 80px; background: var(--soft); min-height: 60vh; }
     .id-wrap { max-width: 740px; margin: 0 auto; }
@@ -192,6 +203,34 @@
     .badge-low   { background: #edf6f0; color: #2d6b3e; }
     .result-desc { font-size: 0.84rem; color: var(--steel); line-height: 1.55; margin-bottom: 9px; }
     .result-action { font-size: 0.83rem; font-weight: 600; color: var(--ink); line-height: 1.4; }
+    .match-confidence {
+      color: var(--steel-2);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin: 2px 0 8px;
+      text-transform: uppercase;
+    }
+    .result-note {
+      background: var(--soft);
+      border-left: 3px solid var(--blue);
+      border-radius: 6px;
+      color: var(--steel);
+      font-size: 0.78rem;
+      line-height: 1.45;
+      margin-top: 10px;
+      padding: 9px 10px;
+    }
+    .result-limit-note {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--steel);
+      font-size: 0.86rem;
+      line-height: 1.5;
+      margin: 0 0 14px;
+      padding: 14px 16px;
+    }
 
     /* CTA block */
     .results-cta {
@@ -270,6 +309,9 @@
         <h1 id="id-hero-title">Pest Identifier</h1>
         <p>Answer 7 quick questions and we'll narrow down what you're looking at — bugs common to Greater Philadelphia, South Jersey, Delaware, and the mid-Atlantic region.</p>
         <p class="id-hero-meta">This tool helps you understand what you might have. For a definitive answer, send a photo to Elite.</p>
+        <div class="id-disclaimer">
+          Identification aid only. Results are not a medical diagnosis, bite diagnosis, or substitute for an on-site inspection. Tiny pests can be hard to judge by memory, so a clear photo or saved sample gives the most accurate answer.
+        </div>
       </div>
     </section>
 
@@ -329,10 +371,11 @@
     {
       id: 'flea', name: 'Flea', concern: 'medium',
       img: 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Flea_Scanning_Electron_Micrograph_False_Color.jpg',
-      desc: 'Tiny, dark brown, extremely hard-bodied insect that jumps. Found on pets, in carpet, and in bedding. Bites leave itchy red welts, usually around ankles and shins.',
+      desc: 'Tiny, reddish-brown to dark brown wingless insect. Adults are about 1/8 inch or smaller, laterally flattened, and usually noticed as jumping specks on pets, socks, carpet, bedding, or ankles before body details are clear.',
       action: 'Treat pets and the home at the same time. A professional can break the full flea life cycle.',
+      confirm: 'Flea should be a strong match only when the pest was truly tiny and jumped or bite/pet clues are present. If it was clearly ant-shaped or easy to inspect, flea is less likely.',
       loc:['bedroom','living_area'],          legs:['6'],    size:['tiny'],   color:['dark_brown','black'],         shape:['flat_oval'],   flight:['no_wings'],               feat:['bites','jumps'],
-      locW:1, legsW:3, sizeW:3, colorW:2, shapeW:2, flightW:1, featW:3
+      locW:2, legsW:4, sizeW:4, colorW:1, shapeW:4, flightW:2, featW:5
     },
     {
       id: 'silverfish', name: 'Silverfish', concern: 'low',
@@ -388,6 +431,24 @@
     },
 
     // ── Stinging insects ──────────────────────
+    {
+      id: 'pharaoh_ant', name: 'Pharaoh Ant / Tiny Indoor Ant', concern: 'medium',
+      img: null,
+      desc: 'Very small yellow to light brown indoor ant, often around warm kitchens, bathrooms, wall voids, baseboards, and appliances. Trails can be subtle because workers are so small.',
+      action: 'Use bait and avoid spraying. Sprays can scatter colonies and make small indoor ant problems harder to control.',
+      confirm: 'A pinched waist, six legs, indoor trail behavior, and tiny size make this a better fit than flea when no jumping or pet-bite clues are present.',
+      loc:['kitchen_bath','living_area','bedroom'], legs:['6'], size:['tiny'], color:['brown_tan','orange_red'], shape:['pinched'], flight:['no_wings'], feat:['none'],
+      locW:2, legsW:3, sizeW:3, colorW:2, shapeW:5, flightW:1, featW:0
+    },
+    {
+      id: 'thief_ant', name: 'Thief Ant / Grease Ant', concern: 'low',
+      img: null,
+      desc: 'Extremely small yellowish to light brown ant that may show up near grease, protein, pet food, pantry debris, or wall/baseboard edges. Often confused with pharaoh ants.',
+      action: 'Sanitation and the right bait matter. A photo helps distinguish tiny ant species before treatment.',
+      confirm: 'Tiny, six-legged, pinched-waist pests in kitchens are usually a small ant group before they are fleas, unless they clearly jump or are associated with pets and bites.',
+      loc:['kitchen_bath','living_area'], legs:['6'], size:['tiny'], color:['brown_tan','orange_red'], shape:['pinched'], flight:['no_wings'], feat:['none'],
+      locW:3, legsW:3, sizeW:3, colorW:2, shapeW:5, flightW:1, featW:0
+    },
     {
       id: 'yellow_jacket', name: 'Yellow Jacket', concern: 'high',
       img: 'https://upload.wikimedia.org/wikipedia/commons/5/59/Vespula_germanica_Richard_Bartz.jpg',
@@ -457,6 +518,51 @@
 
     // ── Seasonal invaders ─────────────────────
     {
+      id: 'springtail', name: 'Springtail', concern: 'low',
+      img: null,
+      desc: 'Tiny moisture-loving pest that may look like a speck and jump when disturbed. Common around damp basements, bathrooms, drains, window tracks, potted plants, and wet exterior walls.',
+      action: 'Reduce moisture, dry the source area, and seal wet entry points. Springtails do not bite people or pets.',
+      confirm: 'If it jumped but was found near moisture and there are no bite or pet clues, springtail is often more likely than flea.',
+      loc:['kitchen_bath','basement','windows','living_area','outdoor'], legs:['6','unknown'], size:['tiny'], color:['grey','dark_brown','black'], shape:['long_thin','rounded'], flight:['no_wings'], feat:['jumps','drain_water'],
+      locW:3, legsW:1, sizeW:3, colorW:1, shapeW:1, flightW:2, featW:4
+    },
+    {
+      id: 'carpet_beetle', name: 'Carpet Beetle', concern: 'low',
+      img: null,
+      desc: 'Small rounded beetle often found at windows, baseboards, closets, stored fabrics, pet-hair buildup, or linty areas. Adults may be black, brown, mottled, or speckled.',
+      action: 'Vacuum edges, closets, and under furniture. Check wool, stored fabrics, taxidermy, pet beds, and lint accumulations.',
+      confirm: 'A small rounded bug near windows or fabrics is more likely carpet beetle than flea if it did not jump and there are no bite/pet clues.',
+      loc:['windows','living_area','bedroom'], legs:['6'], size:['tiny','small'], color:['black','dark_brown','brown_tan','grey'], shape:['rounded'], flight:['wings_no_fly','flying','no_wings'], feat:['none'],
+      locW:2, legsW:2, sizeW:2, colorW:1, shapeW:3, flightW:1, featW:0
+    },
+    {
+      id: 'clothes_moth', name: 'Clothes Moth', concern: 'low',
+      img: null,
+      desc: 'Small tan moth found around closets, rugs, stored fabrics, wool, feathers, or low-light rooms. Larvae cause the fabric damage; adults are a clue to inspect textiles.',
+      action: 'Inspect natural fibers and stored fabrics. Vacuum and launder or dry-clean infested items before storing them sealed.',
+      confirm: 'A small tan flying pest near fabrics or closets should not be scored like flea or ant.',
+      loc:['bedroom','living_area'], legs:['6'], size:['small'], color:['brown_tan'], shape:['long_thin','rounded'], flight:['flying','wings_no_fly'], feat:['none'],
+      locW:3, legsW:1, sizeW:2, colorW:3, shapeW:1, flightW:3, featW:0
+    },
+    {
+      id: 'pantry_moth', name: 'Pantry Moth / Indianmeal Moth', concern: 'low',
+      img: null,
+      desc: 'Small moth usually noticed flying in kitchens or pantries. Larvae feed in stored grains, cereal, flour, pet food, bird seed, nuts, and similar dry goods.',
+      action: 'Inspect dry goods, discard infested packages, vacuum pantry cracks, and store replacement food in sealed containers.',
+      confirm: 'Kitchen flying pest plus stored-food location points toward pantry moth rather than flea, ant, or roach.',
+      loc:['kitchen_bath'], legs:['6'], size:['small','medium'], color:['brown_tan','grey'], shape:['long_thin','rounded'], flight:['flying','wings_no_fly'], feat:['none'],
+      locW:4, legsW:1, sizeW:2, colorW:2, shapeW:1, flightW:3, featW:0
+    },
+    {
+      id: 'fungus_gnat', name: 'Fungus Gnat', concern: 'low',
+      img: null,
+      desc: 'Tiny dark fly that hovers around houseplants, damp soil, windows, or moist indoor areas. Looks mosquito-like but much smaller and does not bite.',
+      action: 'Let plant soil dry between watering, remove decaying plant matter, and use monitoring cards if needed.',
+      confirm: 'Tiny black flying pest near plants or damp indoor areas is more likely fungus gnat than flea.',
+      loc:['living_area','kitchen_bath','windows','basement'], legs:['6'], size:['tiny'], color:['black','dark_brown'], shape:['long_thin'], flight:['flying'], feat:['drain_water'],
+      locW:2, legsW:1, sizeW:3, colorW:1, shapeW:2, flightW:4, featW:2
+    },
+    {
       id: 'stink_bug', name: 'Brown Marmorated Stink Bug', concern: 'low',
       img: 'https://upload.wikimedia.org/wikipedia/commons/5/56/Halyomorpha_halys.jpg',
       desc: 'Shield-shaped grey-brown bug (about 5/8 inch) with alternating light and dark bands along its abdomen edge. Migrates indoors in fall seeking warmth. Does not breed inside or damage structures.',
@@ -492,6 +598,69 @@
     },
 
     // ── Arachnids / myriapods ─────────────────
+    {
+      id: 'common_house_spider', name: 'Common House Spider / Cobweb Spider', concern: 'low',
+      img: null,
+      desc: 'Small to medium brown or grey spider with eight legs and a rounded abdomen. Often found in corners, window frames, basements, garages, and quiet indoor areas with messy cobwebs.',
+      action: 'Vacuum webs and reduce other insects indoors. Seal gaps if spiders keep appearing.',
+      confirm: 'Eight legs plus a spider-like two-part body should push this ahead of insect matches. A photo helps separate house spiders from other spider groups.',
+      loc:['living_area','bedroom','basement','windows'], legs:['8'], size:['small','medium'], color:['brown_tan','dark_brown','grey'], shape:['spider_like','rounded'], flight:['no_wings'], feat:['none','slow'],
+      locW:2, legsW:6, sizeW:2, colorW:1, shapeW:5, flightW:2, featW:1
+    },
+    {
+      id: 'wolf_spider', name: 'Wolf Spider / Ground Spider', concern: 'low',
+      img: null,
+      desc: 'Medium to large brown, tan, grey, or dark spider with a sturdy hairy body. Hunts on the ground instead of using a web and may run very fast across basements, garages, patios, or floors.',
+      action: 'Usually a beneficial predator. Reduce clutter, seal exterior gaps, and call if activity is frequent or unsettling.',
+      confirm: 'Large size, eight legs, no wings, and fast ground movement are the important clues. This should not be confused with flea or ant results.',
+      loc:['basement','living_area','outdoor','windows'], legs:['8'], size:['medium','large'], color:['brown_tan','dark_brown','grey','black'], shape:['spider_like','rounded'], flight:['no_wings'], feat:['fast','none'],
+      locW:2, legsW:6, sizeW:3, colorW:1, shapeW:5, flightW:2, featW:2
+    },
+    {
+      id: 'cellar_spider', name: 'Cellar Spider / Long-legged House Spider', concern: 'low',
+      img: null,
+      desc: 'Very long-legged spider with a small tan or grey body, often in basements, crawl spaces, bathrooms, garages, and ceiling corners. Commonly called daddy longlegs, though that name is used for multiple animals.',
+      action: 'Vacuum webs and reduce humidity/insects. Usually harmless and more of a nuisance than a structural pest.',
+      confirm: 'Tiny body plus very long legs is still an eight-legged spider match, not a flea match.',
+      loc:['basement','kitchen_bath','living_area','windows'], legs:['8'], size:['tiny','small'], color:['grey','brown_tan'], shape:['spider_like','long_thin'], flight:['no_wings'], feat:['none','slow'],
+      locW:3, legsW:6, sizeW:2, colorW:1, shapeW:5, flightW:2, featW:1
+    },
+    {
+      id: 'jumping_spider', name: 'Jumping Spider', concern: 'low',
+      img: null,
+      desc: 'Small compact spider, often dark or black, with a stout body and quick stop-and-go movement. Common around windows, siding, railings, and sunny indoor edges.',
+      action: 'Usually harmless and beneficial. Relocate or vacuum if indoors; seal entry points if they keep appearing.',
+      confirm: 'A jumping pest with eight legs is far more likely to be a jumping spider than a flea.',
+      loc:['windows','outdoor','living_area'], legs:['8'], size:['tiny','small'], color:['black','dark_brown','grey'], shape:['spider_like','rounded'], flight:['no_wings'], feat:['jumps','fast'],
+      locW:2, legsW:6, sizeW:3, colorW:1, shapeW:5, flightW:2, featW:4
+    },
+    {
+      id: 'yellow_sac_spider', name: 'Yellow Sac Spider / Small Pale Spider', concern: 'medium',
+      img: null,
+      desc: 'Small pale yellow, tan, or light brown spider that may wander on walls, ceilings, bedding, or upper corners at night. Often hides in small silk sacs during the day.',
+      action: 'Avoid handling. Vacuum hiding areas and contact Elite if bites are suspected or activity is repeated.',
+      confirm: 'Use this as a broad small-spider lead, not a bite diagnosis. Skin marks alone cannot confirm a spider.',
+      loc:['bedroom','living_area','windows'], legs:['8'], size:['small'], color:['brown_tan','orange_red'], shape:['spider_like','long_thin'], flight:['no_wings'], feat:['bites','fast','none'],
+      locW:2, legsW:6, sizeW:3, colorW:2, shapeW:5, flightW:2, featW:1
+    },
+    {
+      id: 'orb_weaver', name: 'Orb-weaver / Garden Spider', concern: 'low',
+      img: null,
+      desc: 'Medium to large outdoor spider that builds organized circular webs around porches, shrubs, lights, windows, and siding. Colors vary widely from brown and grey to orange, yellow, or black markings.',
+      action: 'Usually beneficial outdoors. Remove webs from walkways and lighting areas if they become a nuisance.',
+      confirm: 'Large visible web plus eight legs points toward an orb-weaver group rather than an indoor insect pest.',
+      loc:['outdoor','windows'], legs:['8'], size:['medium','large'], color:['brown_tan','grey','orange_red','black_yellow','black'], shape:['spider_like','rounded'], flight:['no_wings'], feat:['none','slow'],
+      locW:3, legsW:6, sizeW:2, colorW:1, shapeW:5, flightW:2, featW:1
+    },
+    {
+      id: 'black_widow', name: 'Black Widow Spider', concern: 'high',
+      img: null,
+      desc: 'Glossy black spider with a rounded abdomen; females may have a red hourglass mark underneath. More likely in undisturbed outdoor clutter, sheds, crawl spaces, meter boxes, wood piles, or garages than open living areas.',
+      action: 'Do not handle. Wear gloves around stored items and call Elite if you suspect black widows around active living or work areas.',
+      confirm: 'This is a cautionary match only when black color, rounded spider body, eight legs, and undisturbed hiding areas line up. A photo is important before assuming black widow.',
+      loc:['basement','outdoor','wood'], legs:['8'], size:['small','medium'], color:['black','black_red'], shape:['spider_like','rounded'], flight:['no_wings'], feat:['bites','none','slow'],
+      locW:2, legsW:6, sizeW:2, colorW:3, shapeW:5, flightW:2, featW:1
+    },
     {
       id: 'deer_tick', name: 'Deer Tick (Black-legged Tick)', concern: 'high',
       img: 'https://upload.wikimedia.org/wikipedia/commons/4/47/Ixodes_scapularis.jpg',
@@ -660,6 +829,7 @@
   <path d="M31 2 L21 -3 L14 -6" fill="none" stroke="#18080A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M41 2 L51 -3 L58 -6" fill="none" stroke="#18080A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>` },
+        { value:'spider_like', label:'Spider-like body', sub:'two body sections with long legs', icon:'&#128375;' },
         { value:'shield', label:'Shield or pentagon', sub:'flat, five-sided shape', icon:`<svg width="72" height="72" viewBox="-4 -4 80 76" xmlns="http://www.w3.org/2000/svg" overflow="visible">
   <!-- Stink bug top-down - pentagon shield body -->
   <path d="M36 4 L62 22 L58 58 L36 67 L14 58 L10 22 Z" fill="#606848"/>
@@ -729,18 +899,56 @@
      SCORING ENGINE
   ═══════════════════════════════════════════ */
   const CHECKS = [
-    { key:'loc',    field:'loc',    wField:'locW'    },
-    { key:'legs',   field:'legs',   wField:'legsW'   },
-    { key:'size',   field:'size',   wField:'sizeW'   },
-    { key:'color',  field:'color',  wField:'colorW'  },
-    { key:'shape',  field:'shape',  wField:'shapeW'  },
-    { key:'flight', field:'flight', wField:'flightW' },
-    { key:'feat',   field:'feat',   wField:'featW'   },
+    { key:'loc',    field:'loc',    wField:'locW',    miss:0.45 },
+    { key:'legs',   field:'legs',   wField:'legsW',   miss:1.40 },
+    { key:'size',   field:'size',   wField:'sizeW',   miss:0.85 },
+    { key:'color',  field:'color',  wField:'colorW',  miss:0.45 },
+    { key:'shape',  field:'shape',  wField:'shapeW',  miss:1.20 },
+    { key:'flight', field:'flight', wField:'flightW', miss:0.85 },
+    { key:'feat',   field:'feat',   wField:'featW',   miss:1.00 },
   ];
+
+  const MIN_SECONDARY_SCORE = 8;
+  const MAX_SECONDARY_GAP = 6;
+
+  function applyTraitRules(pest, answers) {
+    let total = 0;
+    const legs = pest.legs || [];
+    const shape = pest.shape || [];
+    const isSpiderLike = legs.includes('8') && shape.includes('spider_like');
+
+    if (answers.legs && answers.legs !== 'unknown') {
+      if (!legs.includes(answers.legs)) total -= 6;
+      if (answers.legs === '8' && legs.includes('6')) total -= 5;
+      if (answers.legs === '6' && legs.includes('8')) total -= 5;
+      if (answers.legs === 'many' && !legs.includes('many')) total -= 5;
+    }
+
+    if (answers.legs === '8' && legs.includes('8')) total += 2;
+    if (answers.shape === 'spider_like' && isSpiderLike) total += 3;
+    if (answers.shape === 'spider_like' && !isSpiderLike) total -= 4;
+    if (answers.shape === 'pinched' && !shape.includes('pinched')) total -= 4;
+    if (answers.shape === 'pinched' && shape.includes('pinched')) total += 2;
+
+    if (pest.id === 'flea') {
+      if (answers.legs && answers.legs !== '6' && answers.legs !== 'unknown') total -= 8;
+      if (answers.size && answers.size !== 'tiny') total -= 5;
+      if (answers.shape && answers.shape !== 'flat_oval') total -= 5;
+      if (answers.feat && !['jumps', 'bites'].includes(answers.feat)) total -= 5;
+      if (answers.loc && !['bedroom', 'living_area', 'outdoor'].includes(answers.loc)) total -= 2;
+      if (answers.size === 'tiny' && ['jumps', 'bites'].includes(answers.feat)) total += 3;
+    }
+
+    if (pest.id === 'springtail' && answers.feat === 'jumps' && ['kitchen_bath', 'basement', 'windows', 'outdoor'].includes(answers.loc)) {
+      total += 3;
+    }
+
+    return total;
+  }
 
   function scorePest(pest, answers) {
     let total = 0;
-    for (const { key, field, wField } of CHECKS) {
+    for (const { key, field, wField, miss } of CHECKS) {
       if (!(key in answers)) continue;
       const val     = answers[key];
       const matches = pest[field] || [];
@@ -749,16 +957,19 @@
       if (matches.includes(val)) {
         total += w;
       } else if (matches.length > 0) {
-        total -= Math.ceil(w * 0.35); // mild penalty for mismatch
+        total -= Math.ceil(w * miss);
       }
     }
-    return total;
+    return total + applyTraitRules(pest, answers);
   }
 
   function getResults(answers) {
-    return PESTS
+    const ranked = PESTS
       .map(p  => ({ pest: p, score: scorePest(p, answers) }))
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => b.score - a.score);
+    const topScore = ranked[0] ? ranked[0].score : 0;
+    return ranked
+      .filter((r, i) => i === 0 || (r.score >= MIN_SECONDARY_SCORE && topScore - r.score <= MAX_SECONDARY_GAP))
       .slice(0, 3);
   }
 
@@ -811,6 +1022,12 @@
     low:    { cls:'badge-low',  text:'Low concern' },
   };
 
+  function getConfidence(score) {
+    if (score >= 18) return 'Strong match from visible traits';
+    if (score >= 12) return 'Plausible match';
+    return 'Exploratory match - confirm with a photo';
+  }
+
   function renderCard(r, idx) {
     const { pest, score } = r;
     if (idx > 0 && score <= 0) return '';
@@ -822,13 +1039,15 @@
     const fallback = `<div class="img-placeholder" ${pest.img ? 'style="display:none"' : ''}>🐛</div>`;
     return `
       <div class="result-card rank-${idx + 1}">
-        ${img}${fallback}
+        ${img}${(!pest.img && (pest.legs || []).includes('8')) ? `<div class="img-placeholder">&#128375;</div>` : fallback}
         <div class="result-body">
           <div class="result-rank">${RANK_LABEL[idx]}</div>
           <div class="result-name">${pest.name}</div>
           <span class="result-badge ${c.cls}">${c.text}</span>
+          <div class="match-confidence">${getConfidence(score)}</div>
           <div class="result-desc">${pest.desc}</div>
           <div class="result-action">${pest.action}</div>
+          ${pest.confirm ? `<div class="result-note"><strong>ID note:</strong> ${pest.confirm}</div>` : ''}
         </div>
       </div>
     `;
@@ -843,10 +1062,13 @@
           <h2>Here's What It Might Be</h2>
           <p>Based on your answers — top matches shown, most likely first.</p>
         </div>
+        <div class="result-limit-note">
+          This tool narrows possibilities from visible traits. It does not identify bites, diagnose health symptoms, or replace inspection. If a possible match is weak, it is filtered out rather than shown as filler.
+        </div>
         ${results.map((r, i) => renderCard(r, i)).join('')}
         <div class="results-cta">
           <h3>Not 100% Sure? Let Elite Take a Look.</h3>
-          <p>A clear photo and a description of where you found it is all we need to give you a fast, accurate answer.</p>
+          <p>A clear photo, where you found it, and whether it jumped, flew, bit, or left a trail will produce a more reliable answer.</p>
           <div class="results-actions">
             <a class="button button-primary" href="../index.html#lead-form">Send a Photo to Elite</a>
             <a class="button button-secondary" href="../pest-library/index.html">Browse Pest Library</a>
