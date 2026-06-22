@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pest Identifier — Greater Philadelphia Region | Elite Pest Control</title>
+  <meta name="description" content="Interactive pest identification tool. Answer a few quick questions to identify what bug or pest you're dealing with in the Greater Philadelphia, South Jersey, and Delaware area.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/png" href="../assets/images/epc-logo.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <style>
+    /* ── Pest Identifier tool styles ── */
+    .id-hero {
+      background: linear-gradient(135deg, #0d1f30 0%, #1a3348 50%, #0d1f30 100%);
+      color: var(--white);
+      padding: 60px 22px 52px;
+      text-align: center;
+    }
+    .id-hero h1 { color: var(--white); font-size: clamp(1.8rem, 4vw, 2.8rem); margin-bottom: 12px; }
+    .id-hero p { color: var(--blue-light); font-size: 1.05rem; max-width: 540px; margin: 0 auto 20px; }
+    .id-hero-meta { font-size: 0.82rem; color: rgba(219, 234, 242, 0.65); }
+
+    .id-section { padding: 44px 22px 80px; background: var(--soft); min-height: 60vh; }
+    .id-wrap { max-width: 740px; margin: 0 auto; }
+
+    /* Progress bar */
+    .progress-track {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 28px;
+    }
+    .progress-dot {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--line);
+      transition: background 0.25s;
+    }
+    .progress-dot.done { background: var(--blue); }
+    .progress-dot.active { background: var(--ink); }
+
+    /* Question card */
+    .question-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 34px 32px 26px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      animation: slideIn 0.2s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .question-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 8px;
+    }
+    .question-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 22px;
+      line-height: 1.3;
+    }
+
+    /* Option grid */
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 10px;
+    }
+    .option-btn {
+      align-items: center;
+      background: var(--soft);
+      border: 2px solid var(--line);
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      font-family: inherit;
+      gap: 6px;
+      padding: 15px 10px 13px;
+      text-align: center;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.1s;
+    }
+    .option-btn:hover {
+      border-color: var(--blue);
+      background: var(--white);
+      box-shadow: 0 2px 8px rgba(109,159,189,0.2);
+    }
+    .option-btn:active { transform: scale(0.97); }
+    .opt-icon { font-size: 1.75rem; line-height: 1; display: block; }
+    .opt-icon-svg { display: flex; align-items: center; justify-content: center; width: 100%; height: 76px; }
+    .opt-icon-svg svg { overflow: visible; max-width: 76px; height: auto; }
+    .opt-label { font-size: 0.82rem; font-weight: 700; color: var(--ink); line-height: 1.3; display: block; }
+    .opt-sub { font-size: 0.7rem; color: var(--steel-2); display: block; line-height: 1.3; margin-top: 1px; }
+
+    /* Nav row */
+    .wizard-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+    .btn-back {
+      background: none;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--steel);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.88rem;
+      padding: 7px 14px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-back:hover { border-color: var(--steel); color: var(--ink); }
+    .step-counter { font-size: 0.78rem; color: var(--steel-2); }
+
+    /* Results */
+    .results-section { animation: slideIn 0.25s ease; }
+
+    .results-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .results-header h2 { font-size: 1.5rem; margin-bottom: 8px; }
+    .results-header p { color: var(--steel-2); font-size: 0.95rem; }
+
+    .result-card {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      background: var(--white);
+      transition: box-shadow 0.15s;
+    }
+    .result-card:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.09); }
+    .result-card.rank-1 {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 2px rgba(109,159,189,0.2);
+    }
+    .result-img {
+      width: 130px;
+      height: 130px;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+    .img-placeholder {
+      width: 130px;
+      height: 130px;
+      background: var(--soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+      flex-shrink: 0;
+    }
+    .result-body { padding: 16px 18px 16px; }
+    .result-rank {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 3px;
+    }
+    .result-card.rank-2 .result-rank { color: var(--steel); }
+    .result-card.rank-3 .result-rank { color: var(--steel-2); }
+    .result-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; color: var(--ink); }
+    .result-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 9px;
+    }
+    .badge-high  { background: #ffeaea; color: #b72f3a; }
+    .badge-med   { background: #fff4e0; color: #a05000; }
+    .badge-low   { background: #edf6f0; color: #2d6b3e; }
+    .result-desc { font-size: 0.84rem; color: var(--steel); line-height: 1.55; margin-bottom: 9px; }
+    .result-action { font-size: 0.83rem; font-weight: 600; color: var(--ink); line-height: 1.4; }
+
+    /* CTA block */
+    .results-cta {
+      text-align: center;
+      margin-top: 28px;
+      padding: 28px 24px;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+    .results-cta h3 { font-size: 1.1rem; margin-bottom: 6px; }
+    .results-cta p  { color: var(--steel); font-size: 0.9rem; margin-bottom: 18px; }
+    .results-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    .btn-restart {
+      background: none;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--steel-2);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
+      padding: 9px 20px;
+      margin: 20px auto 0;
+      display: block;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .btn-restart:hover { color: var(--ink); border-color: var(--steel); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .question-card { padding: 22px 18px 18px; }
+      .option-grid { grid-template-columns: 1fr 1fr; }
+      .result-card { grid-template-columns: 100px 1fr; }
+      .result-img, .img-placeholder { width: 100px; height: 110px; }
+    }
+    @media (max-width: 380px) {
+      .option-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a class="brand" href="../index.html" aria-label="Elite Pest Control home">
+        <img src="../assets/images/epc-logo.png" alt="Elite Pest Control logo">
+        <span>
+          <span class="brand-text">Commercial &amp; Residential</span>
+          <span class="brand-slogan">If You Want the Bugs to Retreat, Call Elite!!!</span>
+        </span>
+      </a>
+      <nav class="nav-links" id="main-nav" aria-label="Primary navigation">
+        <a href="../index.html#services">Services</a>
+        <a href="../index.html#mosquito-control">Mosquito Control</a>
+        <a href="../pest-library/index.html">Pest Library</a>
+        <a href="../index.html#urgent-help">Urgent Help</a>
+        <a href="../industries/index.html">Industries</a>
+        <a href="../service-area/index.html">Service Area</a>
+        <a href="../index.html#lead-form">Contact</a>
+        <a class="button button-primary nav-mobile-cta" href="../index.html#lead-form" data-track="lead_form_submit_start">Request Service</a>
+      </nav>
+      <div class="header-actions">
+        <a class="phone-placeholder" href="tel:2672653704" data-track="phone_click">(267) 265-3704</a>
+        <a class="button button-primary" href="../index.html#lead-form" data-track="lead_form_submit_start">Request Service</a>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="main-nav">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <section class="id-hero" aria-labelledby="id-hero-title">
+      <div class="section-inner">
+        <h1 id="id-hero-title">Pest Identifier</h1>
+        <p>Answer 7 quick questions and we'll narrow down what you're looking at — bugs common to Greater Philadelphia, South Jersey, Delaware, and the mid-Atlantic region.</p>
+        <p class="id-hero-meta">This tool helps you understand what you might have. For a definitive answer, send a photo to Elite.</p>
+      </div>
+    </section>
+
+    <section class="id-section" aria-label="Pest identification wizard">
+      <div class="id-wrap">
+        <div id="wizard" role="main" aria-live="polite"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-wrap">
+      <div>
+        <img class="footer-logo" src="../assets/images/epc-logo.png" alt="Elite Pest Control logo">
+        <p class="footer-slogan">If You Want the Bugs to Retreat, Call Elite!!!</p>
+        <p>Commercial &amp; Residential Pest Control</p>
+        <p>Pest control for Greater Philadelphia, South Jersey, and Northern Delaware.</p>
+      </div>
+      <div>
+        <h3>Pest Tools</h3>
+        <a href="index.html">Pest Identifier</a>
+        <a href="../pest-library/index.html">Pest Library</a>
+        <a href="../service-area/index.html">Service Area</a>
+      </div>
+      <div>
+        <h3>Services</h3>
+        <a href="../index.html#mosquito-control">Mosquito Control</a>
+        <a href="../index.html#urgent-help">Urgent Pest Help</a>
+        <a href="../industries/index.html">Industries</a>
+        <a href="../index.html#lead-form">Contact</a>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <a href="tel:2672653704">(267) 265-3704</a>
+        <a href="mailto:elitepest.jm@gmail.com">elitepest.jm@gmail.com</a>
+        <a href="../index.html#lead-form">Request Service Online</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  /* ═══════════════════════════════════════════
+     PEST DATABASE  —  22 species, mid-Atlantic
+  ═══════════════════════════════════════════ */
+  const PESTS = [
+
+    // ── Bedroom / whole-home ──────────────────
+    {
+      id: 'bed_bug', name: 'Bed Bug', concern: 'high',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/8/87/Bed_bug%2C_Cimex_lectularius.jpg',
+      desc: 'Flat, reddish-brown, apple-seed-sized insect. Hides in mattress seams, box springs, and furniture joints. Bites at night — look for rust-colored specks on sheets and a musty, sweet odor.',
+      action: '⚠️ Requires professional treatment. DIY sprays push colonies deeper and rarely eliminate them.',
+      loc:['bedroom'],        legs:['6'],    size:['small'],  color:['reddish_brown'],          shape:['flat_oval'],   flight:['no_wings'],               feat:['bites'],
+      locW:3, legsW:3, sizeW:2, colorW:3, shapeW:3, flightW:2, featW:3
+    },
+    {
+      id: 'flea', name: 'Flea', concern: 'medium',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Flea_Scanning_Electron_Micrograph_False_Color.jpg',
+      desc: 'Tiny, dark brown, extremely hard-bodied insect that jumps. Found on pets, in carpet, and in bedding. Bites leave itchy red welts, usually around ankles and shins.',
+      action: 'Treat pets and the home at the same time. A professional can break the full flea life cycle.',
+      loc:['bedroom','living_area'],          legs:['6'],    size:['tiny'],   color:['dark_brown','black'],         shape:['flat_oval'],   flight:['no_wings'],               feat:['bites','jumps'],
+      locW:1, legsW:3, sizeW:3, colorW:2, shapeW:2, flightW:1, featW:3
+    },
+    {
+      id: 'silverfish', name: 'Silverfish', concern: 'low',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/c/c0/Lepisma_saccharina.jpg',
+      desc: 'Silvery-grey, carrot-shaped insect up to 3/4 inch. Moves in a quick fish-like wiggle. Prefers humid bathrooms, basements, and closets. Damages books, paper, starch, and fabric.',
+      action: 'Reduce humidity. Seal paper/starch food sources. Elite can treat active populations.',
+      loc:['basement','kitchen_bath'],         legs:['6'],    size:['medium'], color:['grey'],                      shape:['long_thin'],   flight:['no_wings'],               feat:['fast'],
+      locW:3, legsW:2, sizeW:2, colorW:3, shapeW:3, flightW:2, featW:1
+    },
+
+    // ── Cockroaches ───────────────────────────
+    {
+      id: 'german_roach', name: 'German Cockroach', concern: 'high',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/German_cockroach.jpg',
+      desc: 'Tan-brown with two dark stripes behind the head, about 1/2 inch long. The most common kitchen and restaurant roach. Active at night near warmth and moisture. Produces a musty odor.',
+      action: '⚠️ Hardest roach to eliminate — requires professional gel baiting. Spraying spreads colonies.',
+      loc:['kitchen_bath'],                    legs:['6'],    size:['small'],  color:['brown_tan'],                 shape:['flat_oval'],   flight:['no_wings','wings_no_fly'],feat:['fast','smell'],
+      locW:3, legsW:2, sizeW:2, colorW:3, shapeW:2, flightW:1, featW:1
+    },
+    {
+      id: 'american_roach', name: 'American Cockroach', concern: 'high',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Periplaneta_americana.jpg',
+      desc: 'Large reddish-brown roach (1.5–2 inches) with a yellowish figure-eight mark on the back of its head. Prefers basements, floor drains, and large commercial kitchens. Can fly short distances.',
+      action: '⚠️ Seal drains and exterior entry points. Professional treatment needed for active populations.',
+      loc:['basement','kitchen_bath'],         legs:['6'],    size:['large'],  color:['reddish_brown'],             shape:['flat_oval'],   flight:['flying','wings_no_fly'],  feat:['fast','smell'],
+      locW:2, legsW:2, sizeW:3, colorW:3, shapeW:2, flightW:2, featW:1
+    },
+
+    // ── Ants ─────────────────────────────────
+    {
+      id: 'carpenter_ant', name: 'Carpenter Ant', concern: 'medium',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/c/c6/Camponotus_pennsylvanicus.jpg',
+      desc: 'Large black or black-and-red ants (1/4–1/2 inch) that tunnel through soft or moisture-damaged wood. They don\'t eat wood — they excavate it. Common near trees, decks, window frames, and leaking areas.',
+      action: 'Carpenter ants usually signal a moisture or wood-rot problem. Treat the colony and fix the source.',
+      loc:['wood','outdoor','windows'],        legs:['6'],    size:['medium','large'], color:['black'],             shape:['pinched'],     flight:['no_wings','flying'],       feat:['none'],
+      locW:2, legsW:2, sizeW:2, colorW:2, shapeW:3, flightW:0, featW:0
+    },
+    {
+      id: 'odorous_ant', name: 'Odorous House Ant', concern: 'low',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Tapinoma_sessile.jpg',
+      desc: 'Tiny dark brown or black ants (about 1/16 inch) that produce a rotten-coconut smell when crushed. Trail along walls, counters, and baseboards seeking sugar. Most common kitchen ant in the region.',
+      action: 'Use bait — never spray the trail. Spraying causes the colony to split and makes the problem worse.',
+      loc:['kitchen_bath','living_area'],      legs:['6'],    size:['tiny'],   color:['black','dark_brown'],        shape:['pinched'],     flight:['no_wings'],               feat:['smell'],
+      locW:3, legsW:2, sizeW:3, colorW:1, shapeW:3, flightW:1, featW:2
+    },
+    {
+      id: 'pavement_ant', name: 'Pavement Ant', concern: 'low',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Tapinoma_sessile.jpg',
+      desc: 'Small dark brown ants (1/8 inch) with pale legs. Nest under sidewalks, driveways, and foundation slabs. Swarm in summer. Forage indoors for grease and sweets; often found along baseboards.',
+      action: 'Exterior bait around the foundation is most effective. Indoor sprays give only short-term relief.',
+      loc:['kitchen_bath','basement','outdoor'],legs:['6'],  size:['tiny','small'],color:['dark_brown','brown_tan'],shape:['pinched'],     flight:['no_wings'],               feat:['none'],
+      locW:2, legsW:2, sizeW:2, colorW:1, shapeW:3, flightW:1, featW:0
+    },
+
+    // ── Stinging insects ──────────────────────
+    {
+      id: 'yellow_jacket', name: 'Yellow Jacket', concern: 'high',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/5/59/Vespula_germanica_Richard_Bartz.jpg',
+      desc: 'Aggressive black-and-yellow wasp (about 3/4 inch) with a smooth, hairless body. Nests in ground burrows, wall voids, and attic spaces. Capable of stinging repeatedly. Most dangerous late summer.',
+      action: '⚠️ Do not disturb. Ground nests are especially dangerous. Call Elite for safe nest removal.',
+      loc:['outdoor'],                         legs:['6'],    size:['medium'],  color:['black_yellow'],             shape:['pinched'],     flight:['flying'],                 feat:['stings'],
+      locW:3, legsW:2, sizeW:2, colorW:3, shapeW:3, flightW:3, featW:3
+    },
+    {
+      id: 'bald_hornet', name: 'Bald-faced Hornet', concern: 'high',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/b/bd/Bald-faced_hornet.jpg',
+      desc: 'Large black-and-white hornet (3/4–1 inch). Builds the familiar grey papery football-shaped nests in trees, shrubs, and on eaves. Highly defensive — can spray venom toward eyes. Do not approach.',
+      action: '⚠️ Keep all people away from the nest. Removal requires full protective gear — call Elite.',
+      loc:['outdoor','windows'],               legs:['6'],    size:['large','medium'],color:['black_white'],        shape:['pinched'],     flight:['flying'],                 feat:['stings'],
+      locW:2, legsW:2, sizeW:2, colorW:3, shapeW:3, flightW:3, featW:3
+    },
+    {
+      id: 'paper_wasp', name: 'Paper Wasp', concern: 'medium',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/8/86/Polistes_gallicus_in_Algarve.jpg',
+      desc: 'Slender brown-and-yellow wasps with long legs that dangle in flight. Build small open-cell umbrella nests under eaves, deck rails, and window frames. Less aggressive than yellow jackets unless disturbed.',
+      action: 'Small nests can be knocked down at dusk. Hard-to-reach or large nests should be handled by Elite.',
+      loc:['outdoor','windows'],               legs:['6'],    size:['medium'],  color:['brown_tan','black_yellow'], shape:['pinched'],     flight:['flying'],                 feat:['stings'],
+      locW:2, legsW:2, sizeW:2, colorW:2, shapeW:3, flightW:3, featW:2
+    },
+    {
+      id: 'bumble_bee', name: 'Bumble Bee', concern: 'low',
+      img: null,
+      desc: 'Large (3/4–1 inch), fuzzy black-and-yellow bee with a rounded body. Nests in the ground or in old mouse burrows. Important pollinator. Will sting if stepped on or if the nest is disturbed.',
+      action: 'Generally, leave them alone. Mark the nest location so people can avoid stepping on it.',
+      loc:['outdoor'],                         legs:['6'],    size:['large'],   color:['black_yellow'],             shape:['rounded'],     flight:['flying'],                 feat:['stings'],
+      locW:3, legsW:1, sizeW:2, colorW:2, shapeW:2, flightW:2, featW:1
+    },
+    {
+      id: 'carpenter_bee', name: 'Carpenter Bee', concern: 'medium',
+      img: null,
+      desc: 'Looks like a bumblebee but has a shiny, solid black abdomen — bumblebees are fuzzy all over. Bores perfect 1/2-inch round holes into unpainted or unfinished wood on decks, eaves, and fascia boards.',
+      action: 'Fill old holes after treatment. Paint or stain bare wood to deter future boring.',
+      loc:['outdoor','wood'],                  legs:['6'],    size:['large'],   color:['black','black_yellow'],     shape:['rounded'],     flight:['flying'],                 feat:['none'],
+      locW:2, legsW:1, sizeW:2, colorW:2, shapeW:2, flightW:2, featW:0
+    },
+
+    // ── Flies & small fliers ──────────────────
+    {
+      id: 'mosquito', name: 'Mosquito', concern: 'medium',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Aedes_aegypti_CDC-Gathany.jpg',
+      desc: 'Slender dark insect (1/4–3/8 inch) with long thin legs and a prominent needle-like proboscis. Breeds in any standing water, even a bottle cap. Only females bite.',
+      action: 'Eliminate all standing water on your property. Elite can treat yard resting areas and breeding sites.',
+      loc:['outdoor'],                         legs:['6'],    size:['small'],   color:['black','dark_brown'],       shape:['long_thin'],   flight:['flying'],                 feat:['bites'],
+      locW:3, legsW:1, sizeW:2, colorW:1, shapeW:2, flightW:3, featW:3
+    },
+    {
+      id: 'fruit_fly', name: 'Fruit Fly', concern: 'low',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Drosophila_melanogaster.jpg',
+      desc: 'Tiny (1/8 inch) reddish-tan fly with distinctively large red eyes. Breeds in overripe fruit, drains, spilled wine, and any fermenting organic matter. Completes a generation in about 8 days.',
+      action: 'Remove ripened fruit and empty recycling. Clean drains with an enzyme cleaner. Check under appliances.',
+      loc:['kitchen_bath'],                    legs:['6'],    size:['tiny'],    color:['reddish_brown','brown_tan'],shape:['rounded'],     flight:['flying'],                 feat:['drain_water'],
+      locW:3, legsW:1, sizeW:3, colorW:2, shapeW:1, flightW:2, featW:2
+    },
+    {
+      id: 'drain_fly', name: 'Drain Fly / Moth Fly', concern: 'low',
+      img: null,
+      desc: 'Tiny (1/16–1/8 inch), fuzzy grey-black fly with wide, hairy wings that make it look like a miniature moth. Rests on walls near sinks and floor drains. Larvae live in the organic slime inside drains.',
+      action: 'Scrub drains with a drain brush and enzyme cleaner. Address any slow or partially blocked pipes.',
+      loc:['kitchen_bath','basement'],         legs:['6'],    size:['tiny'],    color:['grey','black'],             shape:['rounded'],     flight:['flying','wings_no_fly'],  feat:['drain_water'],
+      locW:3, legsW:1, sizeW:3, colorW:1, shapeW:1, flightW:2, featW:3
+    },
+
+    // ── Seasonal invaders ─────────────────────
+    {
+      id: 'stink_bug', name: 'Brown Marmorated Stink Bug', concern: 'low',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/5/56/Halyomorpha_halys.jpg',
+      desc: 'Shield-shaped grey-brown bug (about 5/8 inch) with alternating light and dark bands along its abdomen edge. Migrates indoors in fall seeking warmth. Does not breed inside or damage structures.',
+      action: 'Seal window and door gaps before September. Vacuum stragglers indoors — do not crush them.',
+      loc:['windows','living_area','bedroom'], legs:['6'],    size:['medium'],  color:['grey','brown_tan'],         shape:['shield'],      flight:['wings_no_fly','flying'],  feat:['smell'],
+      locW:2, legsW:1, sizeW:2, colorW:2, shapeW:3, flightW:1, featW:3
+    },
+    {
+      id: 'boxelder_bug', name: 'Boxelder Bug', concern: 'low',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/1/10/Boisea_trivittata.jpg',
+      desc: 'Flat black bug (about 1/2 inch) with bright red wing edges and markings. Congregates in large numbers on warm south-facing walls in fall. Found near boxelder, maple, and ash trees.',
+      action: 'Seal exterior entry points. Vacuum clusters indoors rather than swatting — they stain when crushed.',
+      loc:['outdoor','windows'],               legs:['6'],    size:['medium'],  color:['black','black_red'],        shape:['flat_oval'],   flight:['wings_no_fly','flying'],  feat:['smell'],
+      locW:2, legsW:1, sizeW:2, colorW:3, shapeW:2, flightW:1, featW:1
+    },
+    {
+      id: 'lady_beetle', name: 'Asian Lady Beetle', concern: 'low',
+      img: null,
+      desc: 'Orange to red oval beetle (about 1/4 inch) with variable black spots and a small white M-shaped mark behind its head. Invades homes in large numbers in fall to overwinter. Can bite lightly and leave yellow stains.',
+      action: 'Seal eave vents and window gaps. Vacuum rather than swatting — crushing leaves yellow stains.',
+      loc:['windows','living_area'],           legs:['6'],    size:['small'],   color:['orange_red'],               shape:['rounded'],     flight:['wings_no_fly','flying'],  feat:['smell'],
+      locW:2, legsW:2, sizeW:2, colorW:3, shapeW:2, flightW:1, featW:1
+    },
+
+    // ── Wood destroyers ───────────────────────
+    {
+      id: 'termite', name: 'Termite Swarmer', concern: 'high',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Coptotermes_formosanus_shiraki_USGov_k8204-7.jpg',
+      desc: 'Dark brown to black, 1/4–3/8 inch, with two pairs of equal-length wings that are shed after swarming. Often mistaken for flying ants — but termites have a thick waist and straight antennae. Swarm in spring after rain.',
+      action: '⚠️ Collect a sample in a sealed bag and call Elite immediately. Termite damage is silent and expensive.',
+      loc:['windows','wood','outdoor'],        legs:['6'],    size:['small'],   color:['dark_brown','black'],       shape:['long_thin'],   flight:['flying'],                 feat:['none'],
+      locW:2, legsW:2, sizeW:2, colorW:1, shapeW:2, flightW:3, featW:0
+    },
+
+    // ── Arachnids / myriapods ─────────────────
+    {
+      id: 'deer_tick', name: 'Deer Tick (Black-legged Tick)', concern: 'high',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/4/47/Ixodes_scapularis.jpg',
+      desc: 'Tiny arachnid — adult is sesame-seed sized; the nymph (most dangerous) is poppy-seed sized. Dark brown with 8 legs. Found in leaf litter, tall grass, and woodland edges. Can transmit Lyme disease and other illnesses.',
+      action: '⚠️ Check skin after being outdoors. Remove embedded ticks with fine-tip tweezers. See a doctor if you find one attached.',
+      loc:['outdoor'],                         legs:['8'],    size:['tiny','small'],color:['reddish_brown','dark_brown'],shape:['flat_oval'],flight:['no_wings'],             feat:['bites'],
+      locW:2, legsW:5, sizeW:2, colorW:1, shapeW:2, flightW:1, featW:2
+    },
+    {
+      id: 'house_centipede', name: 'House Centipede', concern: 'low',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/5/59/Scutigera_coleoptrata.jpg',
+      desc: 'Grey-yellow body (1–1.5 inches) with 15 pairs of very long banded legs — the last pair especially long. Extremely fast. Found in basements and bathrooms. Feeds on other small insects.',
+      action: 'Reduce humidity, seal cracks. Centipedes eat other pests — a large population may indicate a prey insect problem.',
+      loc:['basement','kitchen_bath'],         legs:['many'], size:['medium','large'],color:['grey'],               shape:['long_thin'],   flight:['no_wings'],               feat:['fast'],
+      locW:3, legsW:5, sizeW:1, colorW:1, shapeW:2, flightW:1, featW:2
+    },
+
+  ];
+
+  /* ═══════════════════════════════════════════
+     WIZARD STEPS  —  7 questions
+  ═══════════════════════════════════════════ */
+  const STEPS = [
+    {
+      key: 'loc',
+      label: 'Question 1 of 7',
+      question: 'Where did you first notice it?',
+      options: [
+        { value:'bedroom',    icon:'🛏️', label:'Bedroom / near bed',       sub:'mattress, pillows, or nearby furniture' },
+        { value:'kitchen_bath',icon:'🍳',label:'Kitchen or bathroom',       sub:'sink, counters, or under appliances' },
+        { value:'basement',   icon:'🪣', label:'Basement or crawl space',   sub:'dark, damp, or storage areas' },
+        { value:'outdoor',    icon:'🌿', label:'Yard or garden',            sub:'outside, near plants, soil, or ground' },
+        { value:'windows',    icon:'🪟', label:'Near windows or walls',     sub:'interior or exterior surfaces' },
+        { value:'wood',       icon:'🪵', label:'On wood structures',        sub:'deck, siding, trim, or furniture' },
+        { value:'living_area',icon:'🛋️', label:'Living room / common area', sub:'carpet, upholstery, or open floor' },
+      ]
+    },
+    {
+      key: 'legs',
+      label: 'Question 2 of 7',
+      question: 'How many legs did you count?',
+      options: [
+        { value:'6',     icon:'🐜', label:'6 legs',          sub:'most insects' },
+        { value:'8',     icon:'🕷️', label:'8 legs',          sub:'spiders, ticks, mites' },
+        { value:'many',  icon:'🐛', label:'Way more than 8', sub:'centipede or millipede' },
+        { value:'unknown',icon:'🤷',label:'Hard to tell',    sub:'too fast or too small' },
+      ]
+    },
+    {
+      key: 'size',
+      label: 'Question 3 of 7',
+      question: 'Roughly how big was it (body only, not legs)?',
+      options: [
+        { value:'tiny',  label:'Sesame seed or smaller', sub:'under 2 mm — barely visible', icon:`<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <g transform="translate(36,28) rotate(25)">
+    <ellipse rx="5" ry="9.5" fill="#D4B040" stroke="#A88810" stroke-width="1.2"/>
+    <ellipse cx="-1.5" cy="-3.5" rx="2" ry="4" fill="rgba(255,255,255,0.28)"/>
+    <line y1="-8" y2="8" stroke="#8A6A08" stroke-width="0.9" opacity="0.45"/>
+  </g>
+  <text x="36" y="55" text-anchor="middle" font-size="10" fill="#666" font-family="Arial,sans-serif" font-weight="700">under 2 mm</text>
+  <text x="36" y="67" text-anchor="middle" font-size="8.5" fill="#999" font-family="Arial,sans-serif">sesame seed</text>
+</svg>` },
+        { value:'small', label:'Apple seed sized', sub:'3–7 mm', icon:`<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <path d="M36 10 C43 10 47 22 47 34 C47 46 42 54 36 56 C30 54 25 46 25 34 C25 22 29 10 36 10 Z" fill="#140802" stroke="#0A0400" stroke-width="0.5"/>
+  <path d="M31 15 C30 22 30 33 31.5 42" stroke="rgba(255,255,255,0.13)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <text x="36" y="63" text-anchor="middle" font-size="10" fill="#666" font-family="Arial,sans-serif" font-weight="700">3–7 mm</text>
+</svg>` },
+        { value:'medium',label:'Pencil eraser to a dime', sub:'8–15 mm', icon:`<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <rect x="10" y="14" width="52" height="24" rx="5" fill="#E87878" stroke="#C04444" stroke-width="1.5"/>
+  <rect x="13" y="16" width="16" height="20" rx="3" fill="rgba(255,255,255,0.24)"/>
+  <line x1="36" y1="15" x2="40" y2="37" stroke="rgba(180,40,40,0.22)" stroke-width="1.8"/>
+  <line x1="43" y1="15" x2="47" y2="37" stroke="rgba(180,40,40,0.22)" stroke-width="1.8"/>
+  <rect x="10" y="38" width="52" height="9" rx="2" fill="#B0BAC8" stroke="#8890A0" stroke-width="1"/>
+  <line x1="18" y1="39" x2="18" y2="46" stroke="#7880A0" stroke-width="0.8"/><line x1="25" y1="39" x2="25" y2="46" stroke="#7880A0" stroke-width="0.8"/><line x1="32" y1="39" x2="32" y2="46" stroke="#7880A0" stroke-width="0.8"/><line x1="39" y1="39" x2="39" y2="46" stroke="#7880A0" stroke-width="0.8"/><line x1="46" y1="39" x2="46" y2="46" stroke="#7880A0" stroke-width="0.8"/><line x1="53" y1="39" x2="53" y2="46" stroke="#7880A0" stroke-width="0.8"/>
+  <text x="36" y="62" text-anchor="middle" font-size="10" fill="#666" font-family="Arial,sans-serif" font-weight="700">8–15 mm</text>
+</svg>` },
+        { value:'large', label:'Quarter-sized or bigger', sub:'16 mm and up', icon:`<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <circle cx="36" cy="30" r="22" fill="#C8A820" stroke="#A08810" stroke-width="2"/>
+  <circle cx="36" cy="30" r="20" fill="none" stroke="#B09018" stroke-width="2" stroke-dasharray="3 1.5"/>
+  <circle cx="36" cy="30" r="17" fill="#D0B030"/>
+  <path d="M29 23 Q31 18 36 17 Q41 18 43 23 Q44 28 41 33 Q39 36 36 38 Q33 36 31 33 Q28 28 29 23Z" fill="#B89010" opacity="0.45"/>
+  <text x="36" y="24" text-anchor="middle" font-size="6" fill="#7A5800" font-family="Arial,sans-serif" font-weight="800" letter-spacing="0.5">LIBERTY</text>
+  <text x="36" y="34" text-anchor="middle" font-size="9" fill="#6A4800" font-family="Arial,sans-serif" font-weight="700">25¢</text>
+  <text x="36" y="62" text-anchor="middle" font-size="10" fill="#666" font-family="Arial,sans-serif" font-weight="700">16 mm+</text>
+</svg>` },
+      ]
+    },
+    {
+      key: 'color',
+      label: 'Question 4 of 7',
+      question: 'What was the main body color?',
+      options: [
+        { value:'black',       icon:'⬛', label:'Black',                sub:'solid or very dark' },
+        { value:'brown_tan',   icon:'🟫', label:'Brown or tan',         sub:'light to medium brown' },
+        { value:'reddish_brown',icon:'🔶',label:'Reddish-brown',        sub:'mahogany or rust color' },
+        { value:'black_yellow',icon:'🐝', label:'Black with yellow',    sub:'stripes or patches' },
+        { value:'black_red',   icon:'🔴', label:'Black with red/orange',sub:'distinct markings' },
+        { value:'black_white', icon:'⚫', label:'Black and white',      sub:'strong contrast' },
+        { value:'grey',        icon:'🔘', label:'Grey or mottled',      sub:'silvery, speckled, or shield-patterned' },
+        { value:'orange_red',  icon:'🟠', label:'Orange or red',        sub:'solid or with spots' },
+        { value:'dark_brown',  icon:'🫙', label:'Very dark brown',      sub:'almost black' },
+      ]
+    },
+    {
+      key: 'shape',
+      label: 'Question 5 of 7',
+      question: 'How would you describe the body shape?',
+      options: [
+        { value:'flat_oval', label:'Flat and oval', sub:'like a watermelon seed', icon:`<svg width="72" height="72" viewBox="-4 -6 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <!-- Flat oval body (bed bug / roach top-down) -->
+  <ellipse cx="36" cy="14" rx="8" ry="6.5" fill="#3C2010"/>
+  <ellipse cx="36" cy="38" rx="19" ry="14" fill="#3C2010"/>
+  <ellipse cx="36" cy="38" rx="15" ry="10" fill="#4A2A15" opacity="0.6"/>
+  <line x1="18" y1="28" x2="4"  y2="20" stroke="#3C2010" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="17" y1="38" x2="2"  y2="37" stroke="#3C2010" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="18" y1="48" x2="4"  y2="56" stroke="#3C2010" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="54" y1="28" x2="68" y2="20" stroke="#3C2010" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="55" y1="38" x2="70" y2="37" stroke="#3C2010" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="54" y1="48" x2="68" y2="56" stroke="#3C2010" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M31 8 Q25 2 20 -1" fill="none" stroke="#3C2010" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M41 8 Q47 2 52 -1" fill="none" stroke="#3C2010" stroke-width="1.8" stroke-linecap="round"/>
+</svg>` },
+        { value:'long_thin', label:'Long and narrow', sub:'needle- or torpedo-shaped', icon:`<svg width="72" height="72" viewBox="-4 -8 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <!-- Elongated tapered body (silverfish top-down) -->
+  <path d="M36 2 C41 5 43 16 43 36 C43 54 40 66 36 70 C32 66 29 54 29 36 C29 16 31 5 36 2 Z" fill="#5060A8"/>
+  <ellipse cx="36" cy="6" rx="7" ry="6" fill="#4050A0"/>
+  <line x1="30" y1="18" x2="17" y2="12" stroke="#4050A0" stroke-width="2" stroke-linecap="round"/>
+  <line x1="29" y1="30" x2="15" y2="28" stroke="#4050A0" stroke-width="2" stroke-linecap="round"/>
+  <line x1="30" y1="43" x2="16" y2="47" stroke="#4050A0" stroke-width="2" stroke-linecap="round"/>
+  <line x1="42" y1="18" x2="55" y2="12" stroke="#4050A0" stroke-width="2" stroke-linecap="round"/>
+  <line x1="43" y1="30" x2="57" y2="28" stroke="#4050A0" stroke-width="2" stroke-linecap="round"/>
+  <line x1="42" y1="43" x2="56" y2="47" stroke="#4050A0" stroke-width="2" stroke-linecap="round"/>
+  <path d="M33 2 Q25 -2 19 -5" fill="none" stroke="#4050A0" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M39 2 Q47 -2 53 -5" fill="none" stroke="#4050A0" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M34 69 Q29 74 26 77" fill="none" stroke="#4050A0" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M36 70 Q36 75 36 78" fill="none" stroke="#4050A0" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M38 69 Q43 74 46 77" fill="none" stroke="#4050A0" stroke-width="1.5" stroke-linecap="round"/>
+</svg>` },
+        { value:'rounded', label:'Round or chunky', sub:'compact, oval, or barrel-shaped', icon:`<svg width="72" height="72" viewBox="-4 -4 80 76" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <!-- Round beetle top-down -->
+  <ellipse cx="36" cy="14" rx="11" ry="8.5" fill="#2A4826"/>
+  <ellipse cx="36" cy="40" rx="21" ry="20" fill="#2A4826"/>
+  <ellipse cx="36" cy="34" rx="14" ry="8" fill="#305830"/>
+  <line x1="36" y1="30" x2="36" y2="60" stroke="rgba(0,0,0,0.18)" stroke-width="1.5"/>
+  <line x1="16" y1="28" x2="3"  y2="19" stroke="#2A4826" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="15" y1="42" x2="1"  y2="42" stroke="#2A4826" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="16" y1="55" x2="3"  y2="63" stroke="#2A4826" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="56" y1="28" x2="69" y2="19" stroke="#2A4826" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="57" y1="42" x2="71" y2="42" stroke="#2A4826" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="56" y1="55" x2="69" y2="63" stroke="#2A4826" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M31 7 Q26 1 22 -2" fill="none" stroke="#2A4826" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M41 7 Q46 1 50 -2" fill="none" stroke="#2A4826" stroke-width="1.8" stroke-linecap="round"/>
+</svg>` },
+        { value:'pinched', label:'Pinched waist', sub:'ant-like or wasp-like hourglass', icon:`<svg width="72" height="72" viewBox="-4 -8 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <!-- Ant top-down: head + thorax + petiole + gaster -->
+  <ellipse cx="36" cy="8"  rx="8.5" ry="7.5" fill="#18080A"/>
+  <ellipse cx="36" cy="23" rx="6.5" ry="6"   fill="#18080A"/>
+  <circle  cx="36" cy="33" r="3"              fill="#18080A"/>
+  <ellipse cx="36" cy="50" rx="11" ry="15"   fill="#18080A"/>
+  <line x1="30" y1="20" x2="13" y2="12" stroke="#18080A" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="29" y1="26" x2="12" y2="26" stroke="#18080A" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="30" y1="32" x2="13" y2="40" stroke="#18080A" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="42" y1="20" x2="59" y2="12" stroke="#18080A" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="43" y1="26" x2="60" y2="26" stroke="#18080A" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="42" y1="32" x2="59" y2="40" stroke="#18080A" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M31 2 L21 -3 L14 -6" fill="none" stroke="#18080A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M41 2 L51 -3 L58 -6" fill="none" stroke="#18080A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>` },
+        { value:'shield', label:'Shield or pentagon', sub:'flat, five-sided shape', icon:`<svg width="72" height="72" viewBox="-4 -4 80 76" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <!-- Stink bug top-down - pentagon shield body -->
+  <path d="M36 4 L62 22 L58 58 L36 67 L14 58 L10 22 Z" fill="#606848"/>
+  <path d="M36 22 L52 33 L36 60 L20 33 Z" fill="#4E5638"/>
+  <ellipse cx="20" cy="22" rx="7" ry="4.5" fill="#6A7050" transform="rotate(-18 20 22)"/>
+  <ellipse cx="52" cy="22" rx="7" ry="4.5" fill="#6A7050" transform="rotate(18 52 22)"/>
+  <rect x="28" y="1" width="16" height="10" rx="4" fill="#606848"/>
+  <line x1="14" y1="30" x2="1"  y2="24" stroke="#606848" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="12" y1="44" x2="0"  y2="44" stroke="#606848" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="14" y1="58" x2="1"  y2="66" stroke="#606848" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="58" y1="30" x2="71" y2="24" stroke="#606848" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="60" y1="44" x2="72" y2="44" stroke="#606848" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="58" y1="58" x2="71" y2="66" stroke="#606848" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M31 2 Q25 -2 20 -4" fill="none" stroke="#606848" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M41 2 Q47 -2 52 -4" fill="none" stroke="#606848" stroke-width="1.8" stroke-linecap="round"/>
+</svg>` },
+        { value:'segmented', label:'Many visible segments', sub:'worm-like or many rings', icon:`<svg width="72" height="72" viewBox="-4 -8 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <!-- House centipede top-down - 7 segments with long legs -->
+  <ellipse cx="36" cy="6"  rx="6"   ry="5.5" fill="#6A5040"/>
+  <ellipse cx="36" cy="16" rx="5.5" ry="5"   fill="#6A5040"/>
+  <ellipse cx="36" cy="26" rx="5.5" ry="5"   fill="#6A5040"/>
+  <ellipse cx="36" cy="36" rx="5.5" ry="5"   fill="#6A5040"/>
+  <ellipse cx="36" cy="46" rx="5.5" ry="5"   fill="#6A5040"/>
+  <ellipse cx="36" cy="56" rx="5"   ry="4.5" fill="#6A5040"/>
+  <ellipse cx="36" cy="65" rx="4"   ry="4"   fill="#6A5040"/>
+  <line x1="30" y1="16" x2="10" y2="9"  stroke="#6A5040" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="42" y1="16" x2="62" y2="9"  stroke="#6A5040" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="30" y1="26" x2="8"  y2="20" stroke="#6A5040" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="42" y1="26" x2="64" y2="20" stroke="#6A5040" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="30" y1="36" x2="7"  y2="32" stroke="#6A5040" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="42" y1="36" x2="65" y2="32" stroke="#6A5040" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="30" y1="46" x2="9"  y2="44" stroke="#6A5040" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="42" y1="46" x2="63" y2="44" stroke="#6A5040" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M33 2 Q24 -2 16 -4" fill="none" stroke="#6A5040" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M39 2 Q48 -2 56 -4" fill="none" stroke="#6A5040" stroke-width="1.8" stroke-linecap="round"/>
+</svg>` },
+      ]
+    },
+    {
+      key: 'flight',
+      label: 'Question 6 of 7',
+      question: 'Did it fly, or could you see wings?',
+      options: [
+        { value:'flying',       icon:'✈️', label:'Yes — it was flying',         sub:'actively airborne' },
+        { value:'wings_no_fly', icon:'🪽', label:'Wings visible but didn\'t fly',sub:'crawling with visible wings' },
+        { value:'no_wings',     icon:'🚫', label:'No wings that I could see',   sub:'crawling only, wingless' },
+      ]
+    },
+    {
+      key: 'feat',
+      label: 'Question 7 of 7',
+      question: 'Any other details? Pick the best match.',
+      options: [
+        { value:'bites',      icon:'🩹', label:'Left bites or welts',     sub:'itchy marks on skin' },
+        { value:'stings',     icon:'⚡', label:'Stung or acted aggressive',sub:'painful or defensive' },
+        { value:'smell',      icon:'👃', label:'Smelled when disturbed',   sub:'foul, musty, or chemical odor' },
+        { value:'jumps',      icon:'🦘', label:'It jumped',                sub:'hopped or leaped quickly' },
+        { value:'drain_water',icon:'💧', label:'Near drain or wet area',   sub:'sink, drain, or standing water' },
+        { value:'fast',       icon:'💨', label:'Extremely fast',            sub:'nearly impossible to catch' },
+        { value:'slow',       icon:'🐢', label:'Slow-moving / sluggish',   sub:'barely tried to escape' },
+        { value:'none',       icon:'🤷', label:'Nothing else notable',     sub:'' },
+      ]
+    },
+  ];
+
+  /* ═══════════════════════════════════════════
+     SCORING ENGINE
+  ═══════════════════════════════════════════ */
+  const CHECKS = [
+    { key:'loc',    field:'loc',    wField:'locW'    },
+    { key:'legs',   field:'legs',   wField:'legsW'   },
+    { key:'size',   field:'size',   wField:'sizeW'   },
+    { key:'color',  field:'color',  wField:'colorW'  },
+    { key:'shape',  field:'shape',  wField:'shapeW'  },
+    { key:'flight', field:'flight', wField:'flightW' },
+    { key:'feat',   field:'feat',   wField:'featW'   },
+  ];
+
+  function scorePest(pest, answers) {
+    let total = 0;
+    for (const { key, field, wField } of CHECKS) {
+      if (!(key in answers)) continue;
+      const val     = answers[key];
+      const matches = pest[field] || [];
+      const w       = pest[wField] || 1;
+      if (val === 'unknown' || val === 'none') continue;
+      if (matches.includes(val)) {
+        total += w;
+      } else if (matches.length > 0) {
+        total -= Math.ceil(w * 0.35); // mild penalty for mismatch
+      }
+    }
+    return total;
+  }
+
+  function getResults(answers) {
+    return PESTS
+      .map(p  => ({ pest: p, score: scorePest(p, answers) }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+  }
+
+  /* ═══════════════════════════════════════════
+     WIZARD STATE
+  ═══════════════════════════════════════════ */
+  let step    = 0;
+  const ans   = {};
+
+  /* ─── Render progress dots ─── */
+  function renderProgress() {
+    return `<div class="progress-track" aria-label="Wizard progress">
+      ${STEPS.map((_, i) => `
+        <div class="progress-dot ${i < step ? 'done' : i === step ? 'active' : ''}"></div>
+      `).join('')}
+    </div>`;
+  }
+
+  /* ─── Render a step ─── */
+  function renderStep(s) {
+    return `
+      ${renderProgress()}
+      <div class="question-card">
+        <div class="question-label">${s.label}</div>
+        <div class="question-text">${s.question}</div>
+        <div class="option-grid">
+          ${s.options.map(o => `
+            <button class="option-btn" onclick="pick('${s.key}','${o.value}')">
+              ${o.icon.startsWith('<svg') ? `<span class="opt-icon-svg">${o.icon}</span>` : `<span class="opt-icon">${o.icon}</span>`}
+              <span class="opt-label">${o.label}</span>
+              ${o.sub ? `<span class="opt-sub">${o.sub}</span>` : ''}
+            </button>
+          `).join('')}
+        </div>
+        <div class="wizard-nav">
+          ${step > 0
+            ? `<button class="btn-back" onclick="back()">← Back</button>`
+            : `<span></span>`}
+          <span class="step-counter">${s.label}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  /* ─── Render results ─── */
+  const RANK_LABEL = ['Most likely match', 'Also possible', 'Less likely but similar'];
+  const CONCERN = {
+    high:   { cls:'badge-high', text:'High Concern' },
+    medium: { cls:'badge-med',  text:'Worth addressing' },
+    low:    { cls:'badge-low',  text:'Low concern' },
+  };
+
+  function renderCard(r, idx) {
+    const { pest, score } = r;
+    if (idx > 0 && score <= 0) return '';
+    const c = CONCERN[pest.concern] || CONCERN.low;
+    const img = pest.img
+      ? `<img class="result-img" src="${pest.img}" alt="${pest.name}" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+      : '';
+    const fallback = `<div class="img-placeholder" ${pest.img ? 'style="display:none"' : ''}>🐛</div>`;
+    return `
+      <div class="result-card rank-${idx + 1}">
+        ${img}${fallback}
+        <div class="result-body">
+          <div class="result-rank">${RANK_LABEL[idx]}</div>
+          <div class="result-name">${pest.name}</div>
+          <span class="result-badge ${c.cls}">${c.text}</span>
+          <div class="result-desc">${pest.desc}</div>
+          <div class="result-action">${pest.action}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderResults() {
+    const results = getResults(ans);
+    return `
+      <div class="results-section">
+        ${renderProgress()}
+        <div class="results-header">
+          <h2>Here's What It Might Be</h2>
+          <p>Based on your answers — top matches shown, most likely first.</p>
+        </div>
+        ${results.map((r, i) => renderCard(r, i)).join('')}
+        <div class="results-cta">
+          <h3>Not 100% Sure? Let Elite Take a Look.</h3>
+          <p>A clear photo and a description of where you found it is all we need to give you a fast, accurate answer.</p>
+          <div class="results-actions">
+            <a class="button button-primary" href="../index.html#lead-form">Send a Photo to Elite</a>
+            <a class="button button-secondary" href="../pest-library/index.html">Browse Pest Library</a>
+          </div>
+        </div>
+        <button class="btn-restart" onclick="restart()">↩ Start Over</button>
+      </div>
+    `;
+  }
+
+  /* ─── Actions ─── */
+  function pick(key, value) {
+    ans[key] = value;
+    step++;
+    draw();
+    window.scrollTo({ top: document.getElementById('wizard').offsetTop - 80, behavior: 'smooth' });
+  }
+
+  function back() {
+    if (step > 0) {
+      step--;
+      delete ans[STEPS[step].key];
+      draw();
+    }
+  }
+
+  function restart() {
+    step = 0;
+    Object.keys(ans).forEach(k => delete ans[k]);
+    draw();
+    window.scrollTo({ top: document.getElementById('wizard').offsetTop - 80, behavior: 'smooth' });
+  }
+
+  function draw() {
+    const el = document.getElementById('wizard');
+    el.innerHTML = step >= STEPS.length ? renderResults() : renderStep(STEPS[step]);
+  }
+
+  draw();
+  </script>
+
+  <div class="mobile-cta-bar" aria-label="Quick contact">
+    <a class="mcb-call" href="tel:2672653704">📞 (267) 265-3704</a>
+    <a class="mcb-request" href="../index.html#lead-form">Request Service</a>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+# Internal coordination and business planning files
+.agents/
+.codex/
+compliance/
+PROJECT_LOG.md
+AGENTS.md
+CLAUDE.md
+GAMEPLAN.md
+OPERATIONS.md
+Pest_Control_Growth_and_Exit_Strategy.docx
+
+# Local deploy packages and source-only assets
+elite-pest-control-netlify-upload.zip
+_netlify_public_upload/
+EPC Logo.png
+
+# System files
+.DS_Store
+Thumbs.db

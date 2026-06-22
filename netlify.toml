@@ -1,0 +1,15 @@
+[build]
+  command = "rm -rf dist && mkdir -p dist && cp index.html robots.txt sitemap.xml dist/ && cp -R assets industries pest-identifier pest-library service-area thanks dist/"
+  publish = "dist"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+  from = "/home"
+  to = "/"
+  status = 301
